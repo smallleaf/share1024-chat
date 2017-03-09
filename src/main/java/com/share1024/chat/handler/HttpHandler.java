@@ -37,7 +37,7 @@ public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
         } catch (Exception e) {
             //继续下一次请求，服务端不报错
             ctx.fireChannelRead(request.retain());
-            e.printStackTrace();
+            //   e.printStackTrace();
             return;
         }
         HttpResponse response = new DefaultHttpResponse(request.getProtocolVersion(), HttpResponseStatus.OK);

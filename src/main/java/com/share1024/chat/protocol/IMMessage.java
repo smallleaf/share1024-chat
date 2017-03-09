@@ -44,7 +44,7 @@ public class IMMessage {
 
     }
 
-    public IMMessage(String cmd, long time, String content, int online) {
+    public IMMessage(String cmd, long time, int online, String content) {
         this.cmd = cmd;
         this.time = time;
         this.content = content;
@@ -64,6 +64,13 @@ public class IMMessage {
         this.content = content;
     }
 
+    public IMMessage(String cmd, long time, String sender, int online, String content) {
+        this.cmd = cmd;
+        this.time = time;
+        this.sender = sender;
+        this.content = content;
+        this.online = online;
+    }
 
     public String getAddr() {
         return addr;

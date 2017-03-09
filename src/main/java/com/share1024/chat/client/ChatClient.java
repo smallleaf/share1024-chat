@@ -51,7 +51,7 @@ public class ChatClient {
 
     public static void main(String[] args) {
         try {
-            new ChatClient("yesheng").run("localhost", 8080);
+            new ChatClient("yesheng1").run("localhost", 8080);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

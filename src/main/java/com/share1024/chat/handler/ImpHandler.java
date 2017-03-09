@@ -1,5 +1,6 @@
 package com.share1024.chat.handler;
 
+import com.share1024.chat.processor.MsgProcessor;
 import com.share1024.chat.protocol.IMEncoder;
 import com.share1024.chat.protocol.IMMessage;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,10 +11,11 @@ import io.netty.channel.SimpleChannelInboundHandler;
  */
 public class ImpHandler extends SimpleChannelInboundHandler<IMMessage> {
 
-    private IMEncoder encoder = new IMEncoder();
 
+    private MsgProcessor processor = new MsgProcessor();
     @Override
-    protected void channelRead0(ChannelHandlerContext channelHandlerContext, IMMessage imMessage) throws Exception {
-        System.out.println(encoder.encode(imMessage));
+    protected void channelRead0(ChannelHandlerContext ctx, IMMessage message) throws Exception {
+        System.out.println("==================");
+        processor.sendMsg(ctx.channel(), message);
     }
 }

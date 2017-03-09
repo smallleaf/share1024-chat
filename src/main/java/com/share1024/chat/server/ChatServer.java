@@ -47,21 +47,21 @@ public class ChatServer {
                             pipeline.addLast(new IMEncoder());
                             pipeline.addLast(new IMDecoder());
                             pipeline.addLast(new ImpHandler());
-//                                //对http协议的支持
-//                                //======== 对HTTP协议的支持  ==========
-//                                //Http请求解码器
-//                                pipeline.addLast(new HttpServerCodec());
-//                                //主要就是将一个http请求或者响应变成一个FullHttpRequest对象
-//                                pipeline.addLast(new HttpObjectAggregator(64 * 1024));
-//                                //这个是用来处理文件流
-//                                pipeline.addLast(new ChunkedWriteHandler());
-//                                pipeline.addLast(new WebSocketServerProtocolHandler("/im"));
-//                                //处理HTTP请求的业务逻辑
-//                                pipeline.addLast(new HttpHandler());
-//
-//                                //================= 对websocket支持===============
-//                                //别名 以im开头的都用websocket来解析
-//                                pipeline.addLast(new WebScoketHandler());
+                            //对http协议的支持
+                            //======== 对HTTP协议的支持  ==========
+                            //Http请求解码器
+                            pipeline.addLast(new HttpServerCodec());
+                            //主要就是将一个http请求或者响应变成一个FullHttpRequest对象
+                            pipeline.addLast(new HttpObjectAggregator(64 * 1024));
+                            //这个是用来处理文件流
+                            pipeline.addLast(new ChunkedWriteHandler());
+                            pipeline.addLast(new WebSocketServerProtocolHandler("/im"));
+                            //处理HTTP请求的业务逻辑
+                            pipeline.addLast(new HttpHandler());
+
+                            //================= 对websocket支持===============
+                            //别名 以im开头的都用websocket来解析
+                            pipeline.addLast(new WebScoketHandler());
                         }
                     });
             ChannelFuture ch = bootstrap.bind(port).sync();
