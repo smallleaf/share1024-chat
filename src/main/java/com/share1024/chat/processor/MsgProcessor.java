@@ -72,12 +72,89 @@ public class MsgProcessor {
                 String content = encoder.encode(msg);
                 channel.writeAndFlush(new TextWebSocketFrame(content));
             }
-        } else {//其他命令操作
+        } else if (IMP.CHAT.getName().equals(msg.getCmd())) {//聊天
+            for (Channel channel : onlineUsers) {
+                if (channel != client) {
+                    msg.setSender(getNickName(client));
+                } else {
+                    msg.setSender("you");
+                }
+                msg.setTime(sysTime());
+                String content = encoder.encode(msg);
+                channel.writeAndFlush(new TextWebSocketFrame(content));
+            }
+        } else if (IMP.FLOWER.getName().equals(msg.getCmd())) {
+            //非正常的情况下，就频繁刷花，导致整个屏幕一直是鲜花特效
+            //影响聊天效果
+            //这时候，我们就要加上一个限制，规定1分钟之内，每个人只能刷一次鲜花
+            JSONObject attrs = getAttrs(client);
 
+            //如果为空，就表示这个人从来没有送过鲜花
+            //处女送
+            if (null != attrs) {
+                //就开始判断上次送花时间
+                long lastFlowerTime = attrs.getLongValue("lastFlowerTime");
+                int secends = 60;//60秒之内不能重复送花
+                long sub = sysTime() - lastFlowerTime;
+                if (sub < 1000 * secends) {
+                    msg.setSender("you");
+                    msg.setCmd(IMP.SYSTEM.getName());
+                    msg.setOnline(onlineUsers.size());
+                    msg.setContent("您送鲜花太频繁,请" + (secends - Math.round(sub / 1000)) + "秒后再试");
+
+                    String content = encoder.encode(msg);
+                    client.writeAndFlush(new TextWebSocketFrame(content));
+
+                    return;
+                }
+            }
+            //正常的送花流程
+            for (Channel channel : onlineUsers) {
+                if (channel != client) {
+                    msg.setSender(getNickName(client));
+                    msg.setContent(getNickName(client) + "送来一波鲜花");
+                } else {
+                    msg.setSender("you");
+                    msg.setContent("你给大家送了一波鲜花");
+                    setAttrs(client, "lastFlowerTime", sysTime());
+                }
+                msg.setTime(sysTime());
+                String content = encoder.encode(msg);
+                channel.writeAndFlush(new TextWebSocketFrame(content));
+            }
         }
 
     }
 
+    /**
+     * 获得扩展属性
+     *
+     * @param client
+     * @return
+     */
+    public JSONObject getAttrs(Channel client) {
+        try {
+            return client.attr(ATTRS).get();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 往扩展属性添加自定义key
+     *
+     * @param client
+     * @param key
+     * @param value
+     */
+    public void setAttrs(Channel client, String key, Object value) {
+        JSONObject extendAtrrs = client.attr(ATTRS).get();
+        if (null == extendAtrrs) {
+            extendAtrrs = new JSONObject();
+        }
+        extendAtrrs.put(key, value);
+        client.attr(ATTRS).set(extendAtrrs);
+    }
     public void sendMsg(Channel client, String msg) {
         sendMsg(client, decoder.decode(msg));
     }

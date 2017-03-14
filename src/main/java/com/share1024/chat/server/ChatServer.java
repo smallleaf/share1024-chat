@@ -51,16 +51,21 @@ public class ChatServer {
                             //======== 对HTTP协议的支持  ==========
                             //Http请求解码器
                             pipeline.addLast(new HttpServerCodec());
+                            //消息解码器
+                            //pipeline.addLast(new HttpRequestEncoder());
                             //主要就是将一个http请求或者响应变成一个FullHttpRequest对象
                             pipeline.addLast(new HttpObjectAggregator(64 * 1024));
-                            //这个是用来处理文件流
+                            //消息编码器
+                            // pipeline.addLast(new HttpRequestDecoder());
+                            //这个是用来处理文件流,支持异步发送大的码流
                             pipeline.addLast(new ChunkedWriteHandler());
-                            pipeline.addLast(new WebSocketServerProtocolHandler("/im"));
                             //处理HTTP请求的业务逻辑
                             pipeline.addLast(new HttpHandler());
 
                             //================= 对websocket支持===============
                             //别名 以im开头的都用websocket来解析
+                            pipeline.addLast(new WebSocketServerProtocolHandler("/im"));
+
                             pipeline.addLast(new WebScoketHandler());
                         }
                     });
